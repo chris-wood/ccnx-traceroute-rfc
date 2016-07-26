@@ -1,0 +1,102 @@
+---
+title: CCNx Traceroute
+abbrev: CCNx Traceroute
+docname: draft-wood-icnrg-traceroute-00
+date: 2016-7-22
+category: info
+
+ipr: trust200902
+area: General
+workgroup: ICNRG Working Group
+keyword: Internet-Draft
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs]
+
+author:
+ -
+    name: Marc Mosko
+    organization: PARC, Inc.
+    email: marc.mosko@parc.com
+ -
+    name: Mark Stapp
+    organization: Cisco
+    email: mjs@cisco.com
+ -
+    name: Christopher A. Wood
+    organization: PARC, Inc.
+    email: christopher.wood@parc.com
+
+normative:
+    CCNxMessages:
+        target: https://datatracker.ietf.org/doc/draft-irtf-icnrg-ccnxmessages/
+        title: CCNx Messages in TLV Format
+        author:
+            -
+                name: M. Mosko
+                ins: PARC
+            -
+                name: I. Solis
+                ins: LinkedIn
+            -
+                name: C. Wood
+                ins: PARC
+
+--- abstract
+
+TODO
+
+--- middle
+
+# Introduction
+
+- avoid side-effect solutions
+- "Prefix paths FIB diagnostic tool"
+
+# Assumptions
+
+- routers have names
+- responses contain whatever information the router wants to supply (key ID, name, diagnostic information, etc.)
+
+# Protocol Design
+
+- iterative, by the client
+– Target and “penultimate” name solution
+    ∗ A target name is a prefix and the penultimate name is the name of the path collected so far
+    ∗ If the penultimate name matches the local administrative name then forward the message on target name
+    ∗ Else, generate a traceroute response, set the penultimate name to the local name, and forward the message
+    ∗ Routers can opt out and simply forward interests
+
+## Goals:
+
+- avoid side effect solution
+- continue indefinitely until 
+
+## Protocol
+
+- penultimate name = empty
+- name is prefix of target
+
+- while name != penultimate name:
+    - issue TR request for prefix with PN name
+    - router: on request, and if router processes TR requests:
+        - if penultimate name is empty, then set to LPM of FIB on target name,
+        generate response, and return
+            e.g., if LPM(/a/b/c) = /a, then set penultimate name to /a
+        - else compute l = LPM(target). if |l| = |penultimate|, forward on target. otherwise,
+        set penultimate to l and return response
+
+## Message Format
+
+- encoding things
+- request/response format
+
+## Client Behavior
+
+- execute protocol and display responses as they come
+
+# Security Considerations
+
+TODO: signed responses, authenticated requests, etc.
+
+--- back
